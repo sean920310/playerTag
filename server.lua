@@ -8,8 +8,12 @@ ESX.RegisterServerCallback("playerTag:getData", function(source,cb)
     local xPlayers = ESX.GetPlayers()
     for i=1, #xPlayers do
         local xPlayer = ESX.GetPlayerFromId(xPlayers[i])
+        local _rank = 0
+        if xPlayer.get("rank") then
+            _rank = tonumber(xPlayer.get("rank"))
+        end
         data[xPlayers[i]] = {
-            rank = tonumber(xPlayer.get("rank")),
+            rank = _rank,
         }
     end
     cb(data)
