@@ -12,8 +12,10 @@ ESX.RegisterServerCallback("playerTag:getData", function(source,cb)
         if xPlayer.get("rank") then
             _rank = tonumber(xPlayer.get("rank"))
         end
+        local _guild = xPlayer.get("guild")
         data[xPlayers[i]] = {
             rank = _rank,
+            guild = _guild
         }
     end
     cb(data)

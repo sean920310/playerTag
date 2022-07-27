@@ -29,7 +29,11 @@ end)
 
 --頭上顯示樣式
 function PlayerTag:formatTag(i)
-    return ('[%d] %s Lv.%d'):format(GetPlayerServerId(i), GetPlayerName(i),PlayerTag.data[GetPlayerServerId(i)].rank)
+    if self.data[GetPlayerServerId(i)].guild then
+        return ('[%d] %s-%s Lv.%d'):format(GetPlayerServerId(i),self.data[GetPlayerServerId(i)].guild,GetPlayerName(i),PlayerTag.data[GetPlayerServerId(i)].rank)
+    else
+        return ('[%d] %s Lv.%d'):format(GetPlayerServerId(i), GetPlayerName(i),PlayerTag.data[GetPlayerServerId(i)].rank)    
+    end
 end
 
 function PlayerTag:init()
