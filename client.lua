@@ -29,18 +29,27 @@ end)
 
 --頭上顯示樣式
 function PlayerTag:formatTag(i)
-    if self.data[GetPlayerServerId(i)].guild then
-        return ('[%d] %s-%s Lv.%d'):format(GetPlayerServerId(i),self.data[GetPlayerServerId(i)].guild,GetPlayerName(i),PlayerTag.data[GetPlayerServerId(i)].rank)
+    local targetId = GetPlayerServerId(i)
+    if not self.data[targetId] then
+        return ''
+    end
+    if self.data[targetId].guild then
+        return ('[%d] %s-%s Lv.%d'):format(targetId,self.data[targetId].guild,GetPlayerName(i),PlayerTag.data[targetId].rank)
     else
-        return ('[%d] %s Lv.%d'):format(GetPlayerServerId(i), GetPlayerName(i),PlayerTag.data[GetPlayerServerId(i)].rank)    
+        return ('[%d] %s Lv.%d'):format(targetId, GetPlayerName(i),PlayerTag.data[targetId].rank)    
     end
 end
 
 function PlayerTag:init()
+    local sync = false
     ESX.TriggerServerCallback("playerTag:getData", function(data)
         PlayerTag.data = data
         PlayerTag.hasInit = true
+        sync = true
     end)
+    while not sync do
+        Wait(0)
+    end
 end
 
 function PlayerTag:update()
@@ -108,12 +117,17 @@ end
 
 function PlayerTag:dataRefresh()
     ESX.TriggerServerCallback("playerTag:getData", function(data)
-        PlayerTag.data = data
+        self.data = data
 
         for i = 0, 255 do
-            if NetworkIsPlayerActive(i) and (i ~= playerId or (i == playerId and PlayerTag.showSelfTag)) then
+            if NetworkIsPlayerActive(i) and (i ~= playerId or (i == playerId and self.showSelfTag)) then
                 -- store the tag in a local
-                local tag = mpGamerTags[i].tag
+                local tag = nil
+                if mpGamerTags[i] then
+                    tag = mpGamerTags[i].tag
+                else
+                    return
+                end
 
                 -- update tag
                 if tag ~= nil then
